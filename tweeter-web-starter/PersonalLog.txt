@@ -1,0 +1,2 @@
+On September 23rd, I'm currently working on the AuthenticationFields file. I think that my statusItem file
+is working correctly so far.
