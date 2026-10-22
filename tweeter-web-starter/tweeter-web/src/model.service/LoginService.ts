@@ -2,10 +2,10 @@ import { User, AuthToken, FakeData } from "tweeter-shared";
 
 export class LoginService {
   public async login(
-    alias: string,
-    password: string,
+    _alias: string,
+    _password: string,
   ): Promise<[User, AuthToken]> {
-    // TODO: Replace with the result of calling the server
+    // MVP: Replace with a server authentication request later.
     const user = FakeData.instance.firstUser;
 
     if (user === null) {

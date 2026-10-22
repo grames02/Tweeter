@@ -1,5 +1,5 @@
-import { AuthToken, User } from "tweeter-shared";
-import { LogoutService } from "../model.service/LogoutService";
+import { AuthToken } from "tweeter-shared";
+import { LogoutService } from "../model.service/AppNavbarService";
 
 export interface LogoutView {
   displayErrorMessage(message: string): void;
@@ -14,17 +14,15 @@ export class LogoutPresenter {
     this.logoutService = new LogoutService();
   }
 
-  public async logout(
-    alias: string,
-    password: string,
-  ): Promise<[User, AuthToken] | null> {
+  public async logout(authToken: AuthToken): Promise<boolean> {
     try {
-      return await this.logoutService.logOut(alias, password);
+      await this.logoutService.logout(authToken);
+      return true;
     } catch (error) {
       this.view.displayErrorMessage(
         `Failed to log user out because of exception: ${error}`,
       );
-      return null;
+      return false;
     }
   }
 }

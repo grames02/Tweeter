@@ -1,5 +1,6 @@
 import { AuthToken, User } from "tweeter-shared";
 import { LoginService } from "../model.service/LoginService";
+import type { KeyboardEvent } from "react";
 
 export interface LoginView {
   displayErrorMessage(message: string): void;
@@ -24,7 +25,19 @@ export class LoginPresenter {
       this.view.displayErrorMessage(
         `Failed to log user in because of exception: ${error}`,
       );
+
       return null;
     }
   }
+
+  public loginOnEnter = (
+    event: KeyboardEvent<HTMLElement>,
+    submitDisabled: boolean,
+    submit: () => void | Promise<void>,
+  ): void => {
+    if (event.key === "Enter" && !submitDisabled) {
+      event.preventDefault();
+      void submit();
+    }
+  };
 }

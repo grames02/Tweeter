@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { User } from "tweeter-shared";
 import { useUserNavigation } from "../userNavigation/UserNavigation";
+import { FolloweePresenter } from "../../presenter/FolloweePresenter";
 
 interface Props {
   user: User;
@@ -8,7 +9,9 @@ interface Props {
 }
 
 const UserItem = (props: Props) => {
-  const { navigateToUser } = useUserNavigation();
+  const { navigateToUser } = useUserNavigation({
+    presenterFactory: (view) => new FolloweePresenter(view),
+  });
 
   return (
     <div className="col bg-light mx-0 px-0">

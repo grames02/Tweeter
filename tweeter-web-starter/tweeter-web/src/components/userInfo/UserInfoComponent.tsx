@@ -1,11 +1,18 @@
-import "./UserInfoComponent.css";
 import { useEffect, useState } from "react";
 import { AuthToken, User } from "tweeter-shared";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfo, useUserInfoActions } from "./UserHooks";
-import { FolloweePresenter } from "../../presenter/FolloweePresenter";
-import { FollowerPresenter } from "../../presenter/FollowerPresenter";
+import { useRef } from "react";
+import {
+  UserInfoPresenter,
+  UserInfoView,
+} from "../../presenter/UserInfoPresenter";
+
+interface Props {
+  featureUrl: "/followees" | "/followers";
+  presenterFactory: (listener: UserInfoView) => UserInfoPresenter;
+}
 
 const UserInfo = () => {
   const [isFollower, setIsFollower] = useState(false);
@@ -20,7 +27,15 @@ const UserInfo = () => {
   const { setDisplayedUser } = useUserInfoActions();
   const navigate = useNavigate();
   const location = useLocation();
-  // const followService = new FollowService();
+
+  const presenterRef = useRef<UserInfoPresenter | null>(null);
+  if (!presenterRef.current) {
+    presenterRef.current = new UserInfoPresenter({
+      displayErrorMessage,
+    });
+  }
+
+  const presenter = presenterRef.current;
 
   if (!displayedUser) {
     setDisplayedUser(currentUser!);
@@ -44,7 +59,7 @@ const UserInfo = () => {
         setIsFollower(false);
       } else {
         setIsFollower(
-          await followService.getIsFollowerStatus(
+          await presenter.getIsFollowerStatus(
             authToken!,
             currentUser!,
             displayedUser!,
@@ -64,7 +79,7 @@ const UserInfo = () => {
   ) => {
     try {
       setFolloweeCount(
-        await followService.getFolloweeCount(authToken, displayedUser),
+        await presenter.getFolloweeCount(authToken, displayedUser),
       );
     } catch (error) {
       displayErrorMessage(
@@ -79,7 +94,7 @@ const UserInfo = () => {
   ) => {
     try {
       setFollowerCount(
-        await followService.getFollowerCount(authToken, displayedUser),
+        await presenter.getFollowerCount(authToken, displayedUser),
       );
     } catch (error) {
       displayErrorMessage(
@@ -113,7 +128,7 @@ const UserInfo = () => {
         0,
       );
 
-      await followService.follow(authToken!, displayedUser!);
+      await presenter.follow(authToken!, displayedUser!);
       setIsFollower(true);
 
       setIsFollower(true);
@@ -143,7 +158,7 @@ const UserInfo = () => {
         0,
       );
 
-      await followService.unfollow(authToken!, displayedUser!);
+      await presenter.unfollow(authToken!, displayedUser!);
       setIsFollower(false);
       setIsFollower(false);
       setFollowerCount(followerCount);

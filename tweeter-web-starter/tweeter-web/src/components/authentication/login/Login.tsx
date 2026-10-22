@@ -10,6 +10,7 @@ import { LoginView, LoginPresenter } from "../../../presenter/LoginPresenter";
 
 interface Props {
   originalUrl?: string;
+  presenterFactory: (listener: LoginView) => LoginPresenter;
 }
 
 const Login = (props: Props) => {
@@ -21,33 +22,32 @@ const Login = (props: Props) => {
   const navigate = useNavigate();
   const { updateUserInfo } = useUserInfoActions();
   const { displayErrorMessage } = useMessageActions();
+
   const listener: LoginView = {
-    displayErrorMessage: (message: string) => displayErrorMessage(message),
+    displayErrorMessage,
   };
 
   const presenterRef = useRef<LoginPresenter | null>(null);
 
   if (!presenterRef.current) {
-    presenterRef.current = new LoginPresenter(listener);
+    presenterRef.current = props.presenterFactory(listener);
   }
 
-  const loginPresenter = presenterRef.current;
+  const presenter = presenterRef.current;
 
   const checkSubmitButtonStatus = (): boolean => {
-    return !alias || !password;
+    return !alias.trim() || !password;
   };
 
-  const loginOnEnter = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.key == "Enter" && !checkSubmitButtonStatus()) {
-      doLogin();
+  const doLogin = async (): Promise<void> => {
+    if (checkSubmitButtonStatus()) {
+      return;
     }
-  };
 
-  const doLogin = async () => {
     setIsLoading(true);
 
     try {
-      const result = await loginPresenter.login(alias, password);
+      const result = await presenter.login(alias, password);
 
       if (result === null) {
         return;
@@ -62,23 +62,22 @@ const Login = (props: Props) => {
       setIsLoading(false);
     }
   };
-  const inputFieldFactory = () => {
-    return (
-      <AuthenticationFields
-        onKeyDown={loginOnEnter}
-        setAlias={setAlias}
-        setPassword={setPassword}
-      />
-    );
-  };
 
-  const switchAuthenticationMethodFactory = () => {
-    return (
-      <div className="mb-3">
-        Not registered? <Link to="/register">Register</Link>
-      </div>
-    );
-  };
+  const inputFieldFactory = () => (
+    <AuthenticationFields
+      onKeyDown={(event) =>
+        presenter.loginOnEnter(event, checkSubmitButtonStatus(), doLogin)
+      }
+      setAlias={setAlias}
+      setPassword={setPassword}
+    />
+  );
+
+  const switchAuthenticationMethodFactory = () => (
+    <div className="mb-3">
+      Not registered? <Link to="/register">Register</Link>
+    </div>
+  );
 
   return (
     <AuthenticationFormLayout

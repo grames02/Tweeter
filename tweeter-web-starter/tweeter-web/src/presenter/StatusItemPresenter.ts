@@ -1,4 +1,4 @@
-import { AuthToken, Status, User } from "tweeter-shared";
+import { AuthToken, Status } from "tweeter-shared";
 import { UserService } from "../model.service/UserService";
 import { StatusService } from "../model.service/StatusService";
 

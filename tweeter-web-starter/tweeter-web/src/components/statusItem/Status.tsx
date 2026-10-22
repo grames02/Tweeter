@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Status, Type } from "tweeter-shared";
 import { useUserNavigation } from "../userNavigation/UserNavigation";
+import { FolloweePresenter } from "../../presenter/FolloweePresenter";
 
 interface Props {
   status: Status;
@@ -8,7 +9,10 @@ interface Props {
 }
 
 const Post = (props: Props) => {
-  const { navigateToUser } = useUserNavigation();
+  const { navigateToUser } = useUserNavigation({
+    presenterFactory: (view) => new FolloweePresenter(view),
+  });
+
   return (
     <>
       {props.status.segments.map((segment, index) =>
