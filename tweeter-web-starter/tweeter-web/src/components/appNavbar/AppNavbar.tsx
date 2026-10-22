@@ -7,8 +7,8 @@ import Image from "react-bootstrap/Image";
 import { useMessageActions } from "../toaster/MessageHooks";
 import { useUserInfoActions } from "../userInfo/UserHooks";
 import {
-  LogoutPresenter,
-  LogoutView,
+  AppNavbarPresenter,
+  AppNavbarView,
 } from "../../presenter/AppNavbarPresenter";
 
 const AppNavbar = () => {
@@ -22,14 +22,14 @@ const AppNavbar = () => {
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const listener: LogoutView = {
+  const listener: AppNavbarView = {
     displayErrorMessage,
   };
 
-  const presenterRef = useRef<LogoutPresenter | null>(null);
+  const presenterRef = useRef<AppNavbarPresenter | null>(null);
 
   if (!presenterRef.current) {
-    presenterRef.current = new LogoutPresenter(listener);
+    presenterRef.current = new AppNavbarPresenter(listener);
   }
 
   const presenter = presenterRef.current;

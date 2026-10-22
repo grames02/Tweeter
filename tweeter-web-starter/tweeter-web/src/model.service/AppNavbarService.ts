@@ -1,6 +1,6 @@
 import { AuthToken } from "tweeter-shared";
 
-export class LogoutService {
+export class AppNavbarService {
   public async logout(_authToken: AuthToken): Promise<void> {
     // MVP: Simulate a logout request.
     // Replace this with the server logout call later.

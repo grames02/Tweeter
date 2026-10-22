@@ -1,17 +1,17 @@
 import { AuthToken } from "tweeter-shared";
-import { LogoutService } from "../model.service/AppNavbarService";
+import { AppNavbarService as AppNavbarService } from "../model.service/AppNavbarService";
 
-export interface LogoutView {
+export interface AppNavbarView {
   displayErrorMessage(message: string): void;
 }
 
-export class LogoutPresenter {
-  private view: LogoutView;
-  private logoutService: LogoutService;
+export class AppNavbarPresenter {
+  private view: AppNavbarView;
+  private logoutService: AppNavbarService;
 
-  public constructor(view: LogoutView) {
+  public constructor(view: AppNavbarView) {
     this.view = view;
-    this.logoutService = new LogoutService();
+    this.logoutService = new AppNavbarService();
   }
 
   public async logout(authToken: AuthToken): Promise<boolean> {
