@@ -1,33 +1,23 @@
-import { AuthToken, User } from "tweeter-shared";
 import { LoginService } from "../model.service/LoginService";
 import type { KeyboardEvent } from "react";
+import { Presenter, View } from "./Presenter";
 
-export interface LoginView {
+export interface LoginView extends View {
   displayErrorMessage(message: string): void;
 }
 
-export class LoginPresenter {
-  private view: LoginView;
+export class LoginPresenter extends Presenter<LoginView> {
   private loginService: LoginService;
 
   public constructor(view: LoginView) {
-    this.view = view;
+    super(view);
     this.loginService = new LoginService();
   }
 
-  public async login(
-    alias: string,
-    password: string,
-  ): Promise<[User, AuthToken] | null> {
-    try {
-      return await this.loginService.login(alias, password);
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to log user in because of exception: ${error}`,
-      );
-
-      return null;
-    }
+  public async login(alias: string, password: string) {
+    this.doFailureReportingOperation(async () => {
+      await this.loginService.login(alias, password);
+    }, "log user in");
   }
 
   public loginOnEnter = (

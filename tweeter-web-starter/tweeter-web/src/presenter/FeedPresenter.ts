@@ -11,7 +11,7 @@ export class FeedPresenter extends StatusItemPresenter {
     authToken: AuthToken,
     userAlias: string,
   ): Promise<void> {
-    try {
+    this.doFailureReportingOperation(async () => {
       const [newItems, hasMore] = await this.service.loadMoreFeedItems(
         authToken,
         userAlias,
@@ -24,8 +24,6 @@ export class FeedPresenter extends StatusItemPresenter {
         newItems.length > 0 ? newItems[newItems.length - 1] : null;
 
       this.view.addItems(newItems);
-    } catch (error) {
-      this.view.displayErrorMessage(`Failed to load feed items: ${error}`);
-    }
+    }, "load feed items");
   }
 }

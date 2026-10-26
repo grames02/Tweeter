@@ -2,20 +2,20 @@ import { AuthToken, User } from "tweeter-shared";
 import { RegisterService } from "../model.service/RegisterService";
 import { Buffer } from "buffer";
 import type { ChangeEvent, KeyboardEvent } from "react";
+import { View, Presenter } from "./Presenter";
 
-export interface RegisterView {
+export interface RegisterView extends View {
   displayErrorMessage(message: string): void;
   setImageUrl(url: string): void;
   setImageBytes(bytes: Uint8Array): void;
   setImageFileExtension(extension: string): void;
 }
 
-export class RegisterPresenter {
-  private view: RegisterView;
+export class RegisterPresenter extends Presenter<RegisterView> {
   private registerService: RegisterService;
 
   public constructor(view: RegisterView) {
-    this.view = view;
+    super(view);
     this.registerService = new RegisterService();
   }
 
@@ -26,9 +26,9 @@ export class RegisterPresenter {
     password: string,
     userImageBytes: Uint8Array,
     imageFileExtension: string,
-  ): Promise<[User, AuthToken]> {
-    try {
-      return await this.registerService.register(
+  ) {
+    this.doFailureReportingOperation(async () => {
+      await this.registerService.register(
         firstName,
         lastName,
         alias,
@@ -36,12 +36,7 @@ export class RegisterPresenter {
         userImageBytes,
         imageFileExtension,
       );
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to register user because of exception: ${error}`,
-      );
-      throw error;
-    }
+    }, "register user");
   }
 
   public getFileExtension(file: File): string | undefined {
